@@ -71,7 +71,7 @@
                     <span class="text-xs font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded">PROCESSED</span>
                 </div>
 
-                <div id="aiOutputText" class="text-sm text-slate-300 leading-relaxed overflow-y-auto max-h-[500px] font-mono whitespace-pre-wrap bg-[#090d16] p-4 rounded-xl border border-slate-800">
+                <div id="aiOutputText" class="text-sm text-slate-300 leading-relaxed overflow-y-auto max-h-[500px] font-mono bg-[#090d16] p-4 rounded-xl border border-slate-800">
                 </div>
             </div>
 
@@ -82,10 +82,9 @@
         <p class="text-xs text-slate-500 font-mono">Built for Beyond Tomorrow Summit 2026 // Stack: Tailwind CSS, Git, Vercel Core, Gemini API</p>
     </footer>
 
-    <script type="module">
-        import { GoogleGenAI } from "https://esm.run/@google/genai";
-
-        const GEMINI_API_KEY = "AQ.Ab8RN6LKt_kaZpjkviAIWZ2530ss0qG09Sehasz9HC28HR03vQ";
+    <script>
+        // Paste your new AQ key here
+        const GEMINI_API_KEY = "AQ.Ab8RN6LviLtQMW4rRci9_yE97igHq0XomKMCcHYZaoJ51Co4Q";
 
         window.runAudit = async function() {
             const textInput = document.getElementById('expenseInput').value.trim();
@@ -101,41 +100,38 @@
             outputBox.innerHTML = `<span class="text-cyan-400 animate-pulse"><i class="fa-solid fa-spinner animate-spin mr-2"></i>AI Financial Auditor running analysis...</span>`;
 
             try {
-                const ai = new GoogleGenAI({ 
-                    apiKey: GEMINI_API_KEY,
-                    dangerouslyAllowBrowser: true 
-                });
-                
                 const systemPrompt = `You are an elite FinTech Financial Auditor AI. Analyze the following raw, messy transaction logs or text details. Provide your structured report strictly utilizing clean HTML semantic tags for formatting (such as strong bolding, section headers, clear bullet points, or color spans). Do not wrap your response in markdown code blocks. Focus specifically on:
                 1. TRANSACTION CATEGORIZATION (Group items clearly)
                 2. RISK & ANOMALY DETECTION (Flag unusual spending leaks, recurring subscriptions, or high-risk spending behavior)
                 3. ALGORITHMIC SAVINGS STRATEGY (Provide accurate, practical action items to maximize cash flow efficiencies)`;
 
-                const response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
-                    contents: [
-                        { role: 'user', parts: [{ text: systemPrompt }] },
-                        { role: 'user', parts: [{ text: `Here are the logs to audit:\n${textInput}` }] }
-                    ]
+                // Direct HTTP Request bypassing SDK client-side constraints
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: systemPrompt },
+                                { text: `Here are the logs to audit:\n${textInput}` }
+                            ]
+                        }]
+                    })
                 });
 
-                if (response && response.text) {
-                    let cleanHtml = response.text.replace(/```html|```/g, '').trim();
+                const data = await response.json();
+
+                if (data && data.candidates && data.candidates[0].content.parts[0].text) {
+                    let aiText = data.candidates[0].content.parts[0].text;
+                    let cleanHtml = aiText.replace(/```html|```/g, '').trim();
                     outputBox.innerHTML = cleanHtml;
                 } else {
-                    throw new Error("Empty operational payload response received.");
+                    throw new Error(data.error?.message || "Empty response from server context.");
                 }
 
             } catch (error) {
-                console.error("SDK Error:", error);
+                console.error("Direct Core Connection Fault:", error);
                 outputBox.innerHTML = `
-                    <div class="p-4 bg-red-950/40 border border-red-800 rounded-lg text-red-200 text-sm font-mono">
-                        <span class="font-bold text-red-400">[FATAL CONNECTION ERROR]</span><br>
-                        Failed to reach the Gemini Core Engine cluster interface.<br><br>
-                        <span class="text-xs text-red-400/70">Debug Info: ${error.message || error}</span>
-                    </div>`;
-            }
-        };
-    </script>
-</body>
-</html>
+                    <div class="p-4 bg-red
