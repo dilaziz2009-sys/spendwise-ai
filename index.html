@@ -82,22 +82,60 @@
         <p class="text-xs text-slate-500 font-mono">Built for Beyond Tomorrow Summit 2026 // Stack: Tailwind CSS, Git, Vercel Core, Gemini API</p>
     </footer>
 
-    <script type="module">
-        import { GoogleGenAI } from "https://esm.run/@google/genai";
+   <script type="module">
+    import { GoogleGenAI } from "https://esm.run/@google/genai";
 
-        // 1. Remember to put your secret key from Google AI Studio right here inside the quotes:
-        const GEMINI_API_KEY = "AQ.Ab8RN6LkT_kaZpjkviAIWZ253Oss0qG09Sehasz9HC28HR03vQ"; 
+    // 1. Your secret key from Google AI Studio is securely assigned here:
+    const GEMINI_API_KEY = "AQ.Ab8RN6LKt_kaZpjkviAIWZ2530ss0qG09Sehasz9HC28HR03vQ";
 
-        // 2. These parameters are empty so the call works perfectly when the button is pressed:
-        window.runAudit = async function() {
-            const textInput = document.getElementById('expenseInput').value.trim();
-            if(!textInput) {
-                alert("Please add some financial data to analyze first!");
-                return;
+    // 2. Main interface trigger function called when the button is clicked:
+    window.runAudit = async function() {
+        const textInput = document.getElementById('expenseInput').value.trim();
+        if(!textInput) {
+            alert("Please add some financial data to analyze first!");
+            return;
+        }
+
+        // Toggle visibility to show the dynamic results container
+        document.getElementById('placeholderState').classList.add('hidden');
+        document.getElementById('resultsState').classList.remove('hidden');
+
+        const outputBox = document.getElementById('aiOutputText');
+        outputBox.innerHTML = `<span class="text-cyan-400 animate-pulse"><i class="fa-solid fa-spinner animate-spin mr-2"></i>AI Financial Auditor running analysis...</span>`;
+
+        try {
+            // Initialize the official Google Gen AI SDK package
+            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+            
+            const systemPrompt = `You are an elite FinTech Financial Auditor AI. Analyze the following raw, messy transaction logs or text details. Provide your structured report strictly utilizing clean HTML semantic tags for formatting (such as strong bolding, section headers, clear bullet points, or color spans). Do not wrap your response in markdown code blocks like \\\`\\\`\\\`html. Focus specifically on:
+            1. TRANSACTION CATEGORIZATION (Group items clearly)
+            2. RISK & ANOMALY DETECTION (Flag unusual spending leaks, recurring subscriptions, or high-risk spending behavior)
+            3. ALGORITHMIC SAVINGS STRATEGY (Provide accurate, practical action items to maximize cash flow efficiencies)`;
+
+            // Execute the live model request using the fast gemini-2.5-flash model
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: [
+                    { role: 'user', parts: [{ text: systemPrompt }] },
+                    { role: 'user', parts: [{ text: `Here are the logs to audit:\n${textInput}` }] }
+                ]
+            });
+
+            // Stream the HTML formatted response text directly into the main viewport container
+            if (response && response.text) {
+                outputBox.innerHTML = response.text;
+            } else {
+                throw new Error("Empty operational payload response received from core API service cluster.");
             }
 
-            document.getElementById('placeholderState').classList.add('hidden');
-            document.getElementById('resultsState').classList.remove('hidden');
-            
-            const outputBox = document.getElementById('aiOutputText');
-            outputBox.innerHTML = `<span class="
+        } catch (error) {
+            console.error("SDK Integration Execution Fault:", error);
+            outputBox.innerHTML = `
+                <div class="p-4 bg-red-950/40 border border-red-800 rounded-lg text-red-200 text-sm font-mono">
+                    <span class="font-bold text-red-400">[FATAL CONNECTION ERROR]</span><br>
+                    Failed to reach the Gemini Core Engine cluster interface.<br><br>
+                    <span class="text-xs text-red-400/70">Debug Info: ${error.message || error}</span>
+                </div>`;
+        }
+    };
+</script>
