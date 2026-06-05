@@ -100,7 +100,7 @@
         // Replace the quotes below with your real key from Google AI Studio
         const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
 
-        window.runAudit = async function() {
+        window.runAudit = async function("YOUR_GEMINI_API_KEY_HERE") {
             const textInput = document.getElementById('expenseInput').value.trim();
             if(!textInput) {
                 alert("Please add some financial data to analyze first!");
