@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpendWise AI // FinTech Expense Auditor</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome for sleek FinTech Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-fontawesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
@@ -15,7 +13,6 @@
 </head>
 <body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col justify-between">
 
-    <!-- Header / Navbar -->
     <header class="border-b border-slate-800 bg-[#0f172a]/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -36,10 +33,8 @@
         </div>
     </header>
 
-    <!-- Main Dashboard Body -->
     <main class="max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
         
-        <!-- Left Column: Input Panel -->
         <section class="lg:col-span-5 flex flex-col space-y-4">
             <div class="bg-[#111827]/40 border border-slate-800 rounded-2xl p-5 backdrop-blur-sm shadow-xl flex flex-col flex-grow">
                 <h2 class="text-lg font-semibold text-slate-200 mb-2 flex items-center gap-2">
@@ -58,10 +53,8 @@
             </div>
         </section>
 
-        <!-- Right Column: Output Results -->
         <section id="outputPanel" class="lg:col-span-7 flex flex-col space-y-4">
             
-            <!-- Default Welcome State -->
             <div id="placeholderState" class="bg-[#111827]/20 border border-dashed border-slate-800 rounded-2xl p-8 flex flex-col items-center justify-center text-center flex-grow">
                 <div class="h-16 w-16 bg-slate-800/40 rounded-full flex items-center justify-center text-slate-500 text-2xl mb-4 border border-slate-700/50">
                     <i class="fa-solid fa-terminal"></i>
@@ -70,7 +63,6 @@
                 <p class="text-xs text-slate-500 max-w-sm">Provide raw logs on the left and trigger the engine to view categorization, anomaly tracking, and savings strategies via Gemini AI.</p>
             </div>
 
-            <!-- Analysis Dashboard Panel (Hidden by default) -->
             <div id="resultsState" class="hidden bg-[#111827]/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm shadow-xl flex flex-col flex-grow space-y-6">
                 <div class="flex justify-between items-center border-b border-slate-800 pb-4">
                     <h3 class="text-lg font-semibold text-slate-200 flex items-center gap-2">
@@ -79,28 +71,25 @@
                     <span class="text-xs font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded">PROCESSED</span>
                 </div>
 
-                <!-- Structured Dynamic AI Output Container -->
                 <div id="aiOutputText" class="text-sm text-slate-300 leading-relaxed overflow-y-auto max-h-[500px] font-mono whitespace-pre-wrap bg-[#090d16] p-4 rounded-xl border border-slate-800">
-                    <!-- AI response will stream here -->
-                </div>
+                    </div>
             </div>
 
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="border-t border-slate-900 bg-[#070a12] px-6 py-4 text-center">
         <p class="text-xs text-slate-500 font-mono">Built for Beyond Tomorrow Summit 2026 // Stack: Tailwind CSS, Git, Vercel Core, Gemini API</p>
     </footer>
 
-    <!-- Integration Logic -->
     <script type="module">
         import { GoogleGenAI } from "https://esm.run/@google/genai";
 
-        // Replace the quotes below with your real key from Google AI Studio
+        // 1. Remember to put your secret key from Google AI Studio right here inside the quotes:
         const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
 
-        window.runAudit = async function("YOUR_GEMINI_API_KEY_HERE") {
+        // 2. These parameters are empty so the call works perfectly when the button is pressed:
+        window.runAudit = async function() {
             const textInput = document.getElementById('expenseInput').value.trim();
             if(!textInput) {
                 alert("Please add some financial data to analyze first!");
@@ -111,32 +100,4 @@
             document.getElementById('resultsState').classList.remove('hidden');
             
             const outputBox = document.getElementById('aiOutputText');
-            outputBox.innerHTML = `<span class="text-cyan-400 animate-pulse"><i class="fa-solid fa-spinner animate-spin mr-2"></i>AI FinTech Core Initializing Semantic Audit Engines...</span>`;
-
-            try {
-                const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-                
-                const systemPrompt = `You are an elite FinTech Financial Auditor AI. Analyze the following raw, messy transaction logs or text and provide a structured, professional Financial Health Audit Report.
-                
-                Format your response clearly using clean spacing, bold metrics, and the following exact sections:
-                1. 📊 PARSED TRANSACTION SUMMARY (Group by category: Essentials, Luxury, Income, etc.)
-                2. ⚠️ RISK & ANOMALY DETECTION (Flag unusual spending leaks, recurring subscriptions, or high-risk spending behavior)
-                3. 💡 ALGORITHMIC SAVINGS STRATEGY (Provide concrete, optimization steps to cut costs and maximize efficiency)
-                
-                Raw Logs to Audit:\n${textInput}`;
-
-                const response = await ai.models.generateContent({
-                    model: 'gemini-1.5-flash',
-                    contents: systemPrompt,
-                });
-
-                outputBox.innerText = response.text;
-
-            } catch (error) {
-                console.error(error);
-                outputBox.innerHTML = `<span class="text-rose-400 font-mono">[FATAL ERROR] API connection failed. Please ensure your Gemini API Key is valid and active.</span>`;
-            }
-        }
-    </script>
-</body>
-</html>
+            outputBox.innerHTML = `<span class="
